@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>SMC Trader Calculator</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121d2e;--line:#26364c;--muted:#9fb0c6;--text:#f3f6fb;--green:#35d39a;--red:#ff737d;--blue:#7eb6ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#101827,#0b1220 45%);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);padding:20px 15px calc(28px + env(safe-area-inset-bottom))}
+main{max-width:520px;margin:0 auto}.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--blue);font-weight:800}.head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 20px}.head h1{font-size:26px;margin:4px 0}.rr{border:1px solid #315276;border-radius:12px;padding:8px 11px;color:#c6e0ff;font-weight:700}
+.card{background:rgba(18,29,46,.94);border:1px solid var(--line);border-radius:20px;padding:18px;margin:12px 0;box-shadow:0 12px 35px #0002}.label{color:var(--muted);font-size:13px}.value{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}.big{font-size:35px;letter-spacing:-.04em}.green{color:var(--green)}.red{color:var(--red)}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{background:#0d1726;border-radius:14px;padding:13px}.metric .value{font-size:21px;margin-top:7px}.field{margin:16px 0}.fieldtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px}.fieldtop label{font-size:14px;color:#d5dfec}.fieldtop strong{font-size:18px;font-variant-numeric:tabular-nums}input[type=range]{display:block;width:100%;accent-color:var(--blue);height:32px;touch-action:pan-y}input[type=number]{background:#0b1422;border:1px solid #33455e;border-radius:10px;color:var(--text);font:inherit;padding:11px;width:150px;text-align:right}input:focus{outline:2px solid #609eea}.scale{display:flex;justify-content:space-between;color:#72849b;font-size:11px;margin-top:-3px}.divider{height:1px;background:var(--line);margin:16px 0}.note{color:var(--muted);font-size:12px;line-height:1.5}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}th,td{text-align:right;padding:11px 7px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:600}.btn{background:#1a2a40;border:1px solid #344b68;border-radius:12px;color:var(--text);padding:12px 14px;font-weight:700;font-size:14px;width:100%;margin-top:10px}
+</style>
+</head>
+<body><main>
+<div class="eyebrow">SMC / ICT • RISK MANAGEMENT</div>
+<div class="head"><div><h1>Калькулятор трейдера</h1><div class="label">Компаундинг · риск от текущего баланса</div></div><div class="rr">RR 1:2</div></div>
+<section class="card">
+<div class="row"><div><div class="label">Итоговый баланс</div><div id="balance" class="value big">$5,000.00</div></div><div style="text-align:right"><div class="label">Чистый результат</div><div id="profit" class="value green">+$0.00</div></div></div>
+<div class="divider"></div><div class="grid">
+<div class="metric"><div class="label">Риск следующей сделки</div><div id="riskUsd" class="value red">$50.00</div><div id="riskPct" class="label">1% от баланса</div></div>
+<div class="metric"><div class="label">Потенциальная прибыль</div><div id="winUsd" class="value green">$100.00</div><div class="label">2R при победе</div></div>
+</div></section>
+<section class="card">
+<div class="row"><strong>Параметры</strong><button class="btn" style="width:auto;margin:0;padding:8px 10px" id="reset" type="button">Сбросить</button></div>
+<div class="field"><div class="fieldtop"><label for="capital">Начальный депозит ($)</label><input id="capital" type="number" min="1" max="100000000" step="100" value="5000"></div></div>
+<div class="field"><div class="fieldtop"><label for="risk">Риск на сделку</label><strong id="riskLabel">1%</strong></div><input id="risk" type="range" min="0.5" max="2" step="0.25" value="1"><div class="scale"><span>0,5%</span><span>1%</span><span>1,5%</span><span>2%</span></div></div>
+<div class="field"><div class="fieldtop"><label for="wins">Победных сделок</label><strong id="winsLabel">0</strong></div><input id="wins" type="range" min="0" max="100" step="1" value="0"><div class="scale"><span>0</span><span>50</span><span>100</span></div></div>
+<div class="field"><div class="fieldtop"><label for="losses">Убыточных сделок</label><strong id="lossesLabel">0</strong></div><input id="losses" type="range" min="0" max="100" step="1" value="0"><div class="scale"><span>0</span><span>50</span><span>100</span></div></div>
+<div class="note">Каждая победа: +2R. Каждый убыток: −1R. Риск рассчитывается от баланса после предыдущих сделок. Комиссии и проскальзывание не включены.</div>
+</section>
+<section class="card"><strong>Примеры роста после побед</strong><div class="tablewrap"><table><thead><tr><th>Побед подряд</th><th>Баланс</th><th>Риск дальше</th><th>Профит 2R</th></tr></thead><tbody id="examples"></tbody></table></div></section>
+</main>
+<script>
+(function(){
+const el=id=>document.getElementById(id);
+const money=n=>n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
+function calc(){
+ const capital=Math.max(1,Number(el('capital').value)||5000);
+ const r=Number(el('risk').value)/100, w=Number(el('wins').value), l=Number(el('losses').value);
+ const bal=capital*Math.pow(1+2*r,w)*Math.pow(1-r,l), nextRisk=bal*r, pnl=bal-capital;
+ el('balance').textContent=money(bal);el('profit').textContent=(pnl>=0?'+':'')+money(pnl);el('profit').className='value '+(pnl>=0?'green':'red');
+ el('riskUsd').textContent=money(nextRisk);el('riskPct').textContent=(r*100).toLocaleString('ru-RU')+'% от баланса';el('winUsd').textContent=money(nextRisk*2);
+ el('riskLabel').textContent=(r*100).toLocaleString('ru-RU')+'%';el('winsLabel').textContent=w;el('lossesLabel').textContent=l;
+ const counts=[0,1,2,3,4,5,10,20,50];
+ el('examples').innerHTML=counts.map(n=>{const b=capital*Math.pow(1+2*r,n);return '<tr><td>'+n+'</td><td>'+money(b)+'</td><td>'+money(b*r)+'</td><td>'+money(b*r*2)+'</td></tr>'}).join('');
+}
+['capital','risk','wins','losses'].forEach(id=>{el(id).addEventListener('input',calc);el(id).addEventListener('change',calc);});
+el('reset').addEventListener('click',function(){el('capital').value=5000;el('risk').value=1;el('wins').value=0;el('losses').value=0;calc();});
+calc();
+})();
+</script>
+</body></html>
